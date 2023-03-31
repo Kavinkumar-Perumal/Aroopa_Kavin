@@ -1,0 +1,134 @@
+﻿<p>
+    <center>
+        <h1>List</h1>
+    </center>
+    <div>
+        <button id="back" class="btn btn-primary">Create</button>
+    </div>
+</p>
+
+<table id="View">
+</table>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/jquery.dataTables.min.js"></script>
+    <script src="~/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            debugger;
+            CrudListView();
+
+        });
+
+        function CrudListView() {
+            $.ajax({
+
+                type: "post",
+                dataType: "json",
+                url: "/Aroopa/EmployeeView",
+                success: function (message) {
+                    EmpListTable(message);
+                }
+            })
+        }
+        var table;
+        function EmpListTable(message) {
+            debugger;
+            table = $('#View').DataTable({
+                searching: true,
+                bDestroy: true,
+                "aaData": message,
+                "bAutoWidth": false,
+                "aoColumns":
+                    [
+                        { 'title': "EmpId", 'mData': "EmpId", "width": "90px", 'defaultContext': "" },
+                        { 'title': "Employee_Name", 'mData': "Employee_Name", "width": "150px", 'defaultContext': "" },
+                        { 'title': "Department", 'mData': "Department", "width": "180px", 'defaultContext': "" },
+                        { 'title': "Sex", 'mData': "Sex", "width": "100px", 'defaultContext': "" },
+                        { 'title': "Marital_Status", 'mData': "Marital_Status", "width": "120px", 'defaultContext': "" },
+                        { 'title': "Salary", 'mData': "Salary", "width": "100px", 'defaultContext': "" },
+                        {
+                            "data": "EmpId", 'title': "Update", "Width": "90px",
+                            "render": function (data, type, row) {
+                                return "<button value='" + data + "' id='btnUpdateUser'>Update</button>"
+                            }
+
+                        },
+                        {
+                            "data": "EmpId", 'title': "View", "Width": "90px",
+                            "render": function (data, type, row) {
+                                return "<button value='" + data + "' id='btnViewEmp'>View</button>"
+                            }
+
+                        },
+                        {
+                            "data": "EmpId", 'title': "Delete", "Width": "90px",
+                            "render": function (data, type, row) {
+                                return "<button value='" + data + "' id='btnDeleteEmp'>Delete</button>"
+                            }
+
+                        },
+
+
+                    ],
+                "language":
+                {
+                    "emptyTable": "No Data Found"
+                }
+
+            });
+        }
+        $(document).on('click', "#btnUpdateUser", function () {
+            debugger;
+            var EmpId = $(this).attr('value');
+            sessionStorage.setItem("EmpID", EmpId)
+            window.location.href = "/Aroopa/Edit";
+        });
+        $(document).on('click', "#btnViewEmp", function () {
+            debugger;
+            var EmpId = $(this).attr('value');
+            sessionStorage.setItem("EmpID", EmpId)
+            window.location.href = "/Aroopa/ViewEmployee";
+        });
+        $(document).on('click', "#back", function () {
+            debugger;
+            window.location.href = "/Aroopa/Create";
+        });
+        $(document).on('click', "#btnDeleteEmp", function () {
+            debugger;
+            var EmpId = $(this).attr('value');
+            $.ajax({
+                type: "post",
+                url: "/Aroopa/DeleteEmployee",
+                dataType: "json",
+                data:
+                {
+                    EmpId
+                },
+                success: function (response) {
+
+                    debugger;
+                    $("#editEmpName").val(response[0].Employee_Name);
+                    $("#editDepartment").val(response[0].Department);
+                    $('#editGender').prop('checked', true);
+                    $('#editMstatus').prop('checked', true);
+                    $("#editEmpsal").val(response[0].Salary);
+                    alert('Deleted Successfully');
+                    window.location.href = "/Aroopa/List";
+
+
+                }
+
+            })
+
+            
+        });
+
+
+    </script>
+}
+
+
+

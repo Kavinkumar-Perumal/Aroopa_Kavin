@@ -1,0 +1,145 @@
+﻿<center>
+    <h3>Update Data</h3>
+    <br /><br />
+
+    <div>
+        <p>
+            Employee Name:
+            &nbsp;&nbsp;&nbsp;
+            <input type="text" id="editEmpName" name="Employee_name" placeholder="Enter the Name" required />
+        </p>
+    </div><br />
+    <div>
+        <label>Department:&nbsp;&emsp; </label>&nbsp;&nbsp;&nbsp;&nbsp;
+        <select name="Department" id="editDepartment" required>
+            <option value="0">select</option>
+            <option value="InformationTechnology">Information Technology</option>
+            <option value="Civil">Civil</option>
+            <option value="Mech">Mech</option>
+            <option value="MCA">MCA</option>
+        </select>
+    </div><br />
+    <div>
+        <p>
+            Sex:
+            &emsp;&emsp;&emsp;&emsp;
+            <input type="radio" id="editGender" name="Sex" value="Male" required>
+            <label>Male</label>&emsp;
+            <input type="radio" id="FemaleGender" name="Sex" value="FeMale" required>
+            <label>FeMale</label>
+        </p>
+    </div>
+    <div>
+        <p>
+            Marital Status:
+            &emsp;&emsp;&emsp;
+            <input type="radio" id="editMstatus" name="Mstatus" value="Married" required>
+            <label>Married</label>&emsp;
+            <input type="radio" id="editUnMstatus" name="Mstatus" value="UnMarried" required>
+            <label>Un Married</label>
+        </p>
+    </div>
+    <div>
+        <p>
+            Employee Salary:
+            &nbsp;&nbsp;&nbsp;
+            <input type="text" id="editEmpsal" placeholder="Enter the Salary" name="Employee_Salary" required />
+        </p>
+    </div>
+    <div>
+        <button class="btn btn-primary" type="submit"
+                id="btnupdate" style="margin-top: 32px;">
+            Update
+        </button>&emsp;&emsp;
+
+        <button class="btn btn-primary" type="button"
+                id="btnCancle" style="margin-top: 32px;">
+            Cancle
+        </button>
+    </div>
+
+
+</center>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            debugger;
+            var IdSessionValue = sessionStorage.getItem("EmpID");
+            getNameUserDetails();
+        });
+        $(document).on('click', "#btnCancle", function () {
+            debugger;
+            window.location.href = "/Aroopa/List";
+        });
+        function getNameUserDetails() {
+            var IdSessionValue = sessionStorage.getItem("EmpID");
+            debugger;
+
+            $.ajax({
+                type: "post",
+                url: "/Aroopa/EditEmployee",
+                dataType: "json",
+                data:
+                {
+                    IdSessionValue
+                },
+                success: function (response) {
+
+                    debugger;
+                    $("#editEmpName").val(response[0].Employee_Name);
+                    $("#editDepartment").val(response[0].Department);
+                    if (response[0].Sex == 'Male') {
+                        $('#editGender').prop('checked', true);
+                    }
+                    if (response[0].Sex == 'FeMale') {
+                        $('#FemaleGender').prop('checked', true);
+                    }
+                    if (response[0].Marital_Status == 'Married') {
+                        $('#editMstatus').prop('checked', true);
+                    }
+                    if (response[0].Marital_Status == 'UnMarried') {
+                        $('#editUnMstatus').prop('checked', true);
+                    }
+                    
+                    $("#editEmpsal").val(response[0].Salary);
+
+
+
+                }
+
+            })
+        }
+        $("#btnupdate").click(function () {
+            debugger;
+            var NameUpdate = $("#editEmpName").val();
+            var DepartmentUpdate = $("#editDepartment").val();
+            var GenderUpdate = $("#editGender").val();
+            var MstatusUpdate = $("#editMstatus").val();
+            var SalUpdate = $("#editEmpsal").val();
+            if (NameUpdate != "" && DepartmentUpdate != "" && GenderUpdate != "" && MstatusUpdate != "" && SalUpdate != "") {
+                $.ajax({
+                    type: "post",
+                    url: "/Aroopa/UpdateEmployeeDetails",
+                    dataType: "json",
+                    data: {
+                        EmpId: sessionStorage.getItem("EmpID"),
+                        NameUpdate: NameUpdate,
+                        DepartmentUpdate: DepartmentUpdate,
+                        GenderUpdate: GenderUpdate,
+                        MstatusUpdate: MstatusUpdate,
+                        SalUpdate: SalUpdate
+                    },
+                    success: function (response) {
+                        debugger;
+                        alert('Updated Successfully');
+                        window.location.href = "/Aroopa/List";
+                    }
+                })
+
+            }
+        })
+    </script>
+

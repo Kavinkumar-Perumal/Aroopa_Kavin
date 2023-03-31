@@ -1,0 +1,212 @@
+﻿<center>
+    <h3>Create Data</h3>
+    <br /><br />
+          
+              <div>
+                  <p>
+                      Employee Name:
+                      &nbsp;&nbsp;&nbsp;
+                      <input type="text" id="EmpName" name="Employee_name"  placeholder="Enter the Name" required />
+                  </p>
+              </div><br />
+              <div>
+                  <label>Department:&nbsp;&emsp; </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                  <select name="Department" id="Department" required>
+                      <option value="0">select</option>
+                      <option value="InformationTechnology">Information Technology</option>
+                      <option value="Civil">Civil</option>
+                      <option value="Mech">Mech</option>
+                      <option value="MCA">MCA</option>
+                  </select>
+              </div><br />
+              <div>
+                  <p >
+                      Sex:
+                      &emsp;&emsp;&emsp;&emsp;
+                      <input type="radio" id="Gender" name="Sex" value="Male" required>
+                      <label>Male</label>&emsp;
+                      <input type="radio" id="Gender" name="Sex" value="FeMale" required>
+                      <label>FeMale</label>
+                  </p>
+              </div>
+              <div>
+                  <p>
+                      Marital Status:
+                      &emsp;&emsp;&emsp;
+                      <input type="radio" id="Mstatus" name="Mstatus" value="Married" required>
+                      <label>Married</label>&emsp;
+                      <input type="radio" id="Mstatus" name="Mstatus" value="UnMarried" required>
+                      <label>Un Married</label>
+                  </p>
+              </div>
+              <div>
+                  <p>
+                      Employee Salary:
+                      &nbsp;&nbsp;&nbsp;
+                      <input type="text" id="Empsal" placeholder="Enter the Salary" name="Employee_Salary"   required />
+                  </p>
+              </div>
+              <div>
+                  <button class="btn btn-primary" type="submit"
+                          id="btnsubmit" style="margin-top: 32px;">
+                      Create
+                  </button>&emsp;&emsp;
+                
+                  <button class="btn btn-primary" type="button"
+                          id="btnclear" style="margin-top: 32px;">
+                      Clear
+                  </button>
+              </div>
+
+          
+</center>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $("#Empsal").keypress(function (e) {
+        debugger;
+        if ((e.keyCode >= 48 && e.keyCode <= 57)) {
+            return true;
+        } else {
+            return false;
+        }
+        
+        
+
+    })
+    $("#btnsubmit").click(function(){
+        debugger;
+        var EmployeeName = $("#EmpName").val();
+        var Department = $("#Department").val();
+        var Gender = document.getElementsByName("Sex");
+        var Mstatus = document.getElementsByName("Mstatus");
+        var Empsal = $("#Empsal").val();
+
+
+        var Value = "Accept";
+        if (EmployeeName != "")
+        {
+            var alphaExp = /^[a-zA-Z\s]+$/;
+            if (EmployeeName.match(alphaExp))
+            {
+                Value = "Accept";
+            }
+            else
+            {
+                Value = "Reject";
+                alert('Please Enter correct format in the Employee Name');
+            }
+        }
+        else
+        {
+            Value = "Reject";
+            alert('Please Enter value in the Employee Name');
+        }
+        if (Value == "Accept")
+        {
+            if (Department != "")
+            {
+                if (Department != "0") {
+                    Value = "Accept";
+                }
+                else {
+                    Value = "Reject";
+                    alert('Please Select the Department');
+                }
+
+            }
+            else
+            {
+                Value = "Reject";
+                alert('Please select the Department');
+            }
+        }
+        if (Value == "Accept")
+        {
+            if (Gender['0'].checked == true || Gender['1'].checked == true)
+            {
+                Gender = $('input[name="Sex"]:checked').val();
+                Value = "Accept";
+            }
+            else {
+                Value = "Reject";
+                alert('Please select the Gender');
+            }
+        }
+        if (Value == "Accept") {
+            if (Mstatus['0'].checked == true || Mstatus['1'].checked == true) {
+                Mstatus = $('input[name="Mstatus"]:checked').val();
+                Value = "Accept";
+            }
+            else {
+                Value = "Reject";
+                alert('Please select the Marital Status');
+            }
+        }
+        if (Value == "Accept") {
+            if (String(Empsal).trim() != '') {
+                Value = "Accept";
+            }
+            else {
+                Value = "Reject";
+                alert('Please Enter Salary');
+            }
+        }
+
+        if (Value == "Accept")
+        {
+            $.ajax({
+                type:"post",
+                url:"/Aroopa/InserEmployeeDetails",
+                dataType:"json",
+                data:{
+                    EmployeeName: EmployeeName,
+                    Department: Department,
+                    Gender: Gender,
+                    Mstatus: Mstatus,
+                    Empsal: Empsal
+                },
+                success:function(response)
+                {
+                    if (response == "Success") {
+                        
+                        debugger;
+                        $("#EmpName").val('');
+                        $('#Department').val('0').attr("selected", "selected");
+                        $('input[name="Sex"]').prop('checked', false);
+                        $('input[name="Mstatus"]').prop('checked', false);
+                        $("#Empsal").val('');
+                        alert('Inserted Successfully');
+                        window.location.href = "/Aroopa/List";
+                        GetEmployeeDetails();
+                    }
+                    if (response == "Error") {
+                        alert('Error while inserting');
+                    }
+                    debugger;
+                }
+            })
+
+        }
+    })
+    $(document).on('click', "#btnclear", function () {
+        debugger;
+        $("#EmpName").val('');
+        $('#Department').val('0').attr("selected", "selected");
+        $('input[name="Sex"]').prop('checked', false);
+        $('input[name="Mstatus"]').prop('checked', false);
+        $("#Empsal").val('');
+    });
+    function GetEmployeeDetails() {
+        $.ajax({
+            type: "post",
+            url: "/Aroopa/EmployeeView",
+            dataType: "json",
+            data: {
+                
+            },
+            success: function (response) {
+                debugger;
+            }
+        })
+    }
+</script>
